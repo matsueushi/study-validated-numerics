@@ -1,0 +1,7 @@
+name = "study-validated-numerics"
+uuid = "7dd9eb60-b855-48a3-87be-4db9ce8ae64b"
+authors = ["matsueushi <matsueushi@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
