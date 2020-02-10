@@ -57,7 +57,7 @@
 
 #-
 ## Normalized range
-const FloatTypes = [Float16, Float32, Float64]
+const FloatTypes = (Float16, Float32, Float64)
 
 for T in FloatTypes
     println("Normalized range of $(T) is ", floatmin(T), " <= |x| <= ", floatmax(T))
@@ -69,19 +69,28 @@ for T in FloatTypes
     println("Bitstring expression of normalized range of $(T) is ", bitstring(floatmin(T)), " <= |x| <= ", bitstring(floatmax(T)))
 end
 
-# ## 1.2.1 Subnormal numbers
-# **Def.** $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
+# ### 1.2.1 Subnormal numbers
+# **Def**. $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
+
+for T in FloatTypes
+    println("$(T) ", nextfloat(zero(T)), ", ", prevfloat(floatmin(T)))
+end
+
+#- 
+for T in FloatTypes 
+    println(bitstring(floatmin(nextfloat(zero(T)))), ",", bitstring(prevfloat(floatmin(T))))
+end
 
 # ## 1.3. Rounding
 # Let $\mathbb{R}^* = \mathbb{R} \cup \{ -\infty, +\infty \}, \mathbb{F}^* = \mathbb{F} \cup \{ -\infty, \infty \}$.
 # 
-# **Def.** A *rounding* is a mapping $\bigcirc : \mathbb{R}^* \rightarrow \mathbb{F}^*$ satisfying the conditions (R1) and (R2):
+# **Def**. A *rounding* is a mapping $\bigcirc : \mathbb{R}^* \rightarrow \mathbb{F}^*$ satisfying the conditions (R1) and (R2):
 #
 # (R1) $x \in \mathbb{F}^* \Rightarrow \bigcirc (x) = x$.
 #
-# (R2, *Maximum quality*) $x, y \in \mathbb{R}^*, x \le y \Rightarrow \bigcirc (x) \le \bigcirc (y)
+# (R2, *Maximum quality*) $x, y \in \mathbb{R}^*, x \le y \Rightarrow \bigcirc (x) \le \bigcirc (y)$
 # 
-# **Def.** Let $\bigcirc$ be a rounding.
+# **Def**. Let $\bigcirc$ be a rounding.
 #
 # (R3) $\bigcirc$ is *odd* if $\bigcirc (-x) = - \bigcirc (x)$ for all $x \in \mathbb{R}^*$.
 #
@@ -93,6 +102,11 @@ end
 # *Rounded down:* $\triangledown (x) = \max \{y \in \mathbb{F}^* \mid y \le x\}$,
 #
 # *Rounded up:* $\triangle (x) = \min \{y \in \mathbb{F}^* \mid y \ge x\}$.
+
+# ### 1.3.1 Round to Zero
+# **Def**. $\square_z : \mathbb{R}^* \rightarrow \mathbb{F}^*, \square_z (x) = 
+# \text{sign} (x) \max \{ y \in \mathbb{F}^* \mid y \le |x| \} =
+# \text{sign} (x) \triangledown (|x|)$.
 
 # ## 1.4. Floating Point Arithmetic
 
