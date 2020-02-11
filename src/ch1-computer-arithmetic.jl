@@ -1,4 +1,4 @@
-# # Chapter 1, Computer Arithmetic
+# # Chapter 1. Computer Arithmetic
 
 # ## 1.1 Positional Systems
 # $\beta \in \mathbb{Z}, \beta \ge 2$ : Integer base
@@ -89,7 +89,7 @@ end
 # (R1) $x \in \mathbb{F}^* \Rightarrow \bigcirc (x) = x$.
 #
 # (R2, *Maximum quality*) $x, y \in \mathbb{R}^*, x \le y \Rightarrow \bigcirc (x) \le \bigcirc (y)$
-# 
+
 # **Def**. Let $\bigcirc$ be a rounding.
 #
 # (R3) $\bigcirc$ is *odd* if $\bigcirc (-x) = - \bigcirc (x)$ for all $x \in \mathbb{R}^*$.
@@ -102,6 +102,12 @@ end
 # *Rounded down:* $\triangledown (x) = \max \{y \in \mathbb{F}^* \mid y \le x\}$,
 #
 # *Rounded up:* $\triangle (x) = \min \{y \in \mathbb{F}^* \mid y \ge x\}$.
+
+# If $x \in \mathbb{F}^*$, then $\triangledown (x) = x = \triangle (x)$, on the contrary 
+# if $x \notin \mathbb{F}^*$,  we have $\triangledown (x) = x = \triangle (x)$
+#
+# $\triangledown$ and $\triangle$ give the lower bound and upper bound of roundings: if $\bigcirc$ is a rounding,
+# $\triangledown (x) \le \bigcirc (x) \le \triangle (x)$ for all $x$.
 
 # ### 1.3.1 Round to Zero
 # **Def**. $\square_z : \mathbb{R}^* \rightarrow \mathbb{F}^*, \square_z (x) = 
@@ -127,5 +133,15 @@ end
 ## Machine epsilon
 for T in FloatTypes
     println("Machine epsilon of $(T) is ", eps(T)) 
+end
+
+# ## 1.6. Examples of Floating Point Computations
+
+#-
+rump(x::Real, y::Real) = 333.75y^6 + x^2 * (11x^2 * y^2 - y^6 - 121y^4 -2) + 5.5y^8 + x/(2y)
+
+x, y = 77617, 33096
+for T in FloatTypes
+    println("rump(x, y) = ", rump(T(x), T(y)))
 end
 
