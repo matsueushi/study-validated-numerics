@@ -9,3 +9,4 @@ deps/usr/
 deps/src/
 
 .vscode/
+.ipynb_checkpoints/

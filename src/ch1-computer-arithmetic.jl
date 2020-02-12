@@ -63,12 +63,6 @@ for T in FloatTypes
     println("Normalized range of $(T) is ", floatmin(T), " <= |x| <= ", floatmax(T))
 end
 
-#- 
-## Bitstring expression of normalized range
-for T in FloatTypes 
-    println("Bitstring expression of normalized range of $(T) is ", bitstring(floatmin(T)), " <= |x| <= ", bitstring(floatmax(T)))
-end
-
 # ### 1.2.1 Subnormal numbers
 # **Def**. $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
 
@@ -133,6 +127,73 @@ end
 ## Machine epsilon
 for T in FloatTypes
     println("Machine epsilon of $(T) is ", eps(T)) 
+end
+
+# ## 1.5. The IEEE standard
+
+#-
+for T in FloatTypes
+    println("$(T), exponent width in bits = ", Base.exponent_bits(T), ", precision = ", precision(T)) 
+end
+
+#-
+function print_float_format(x, digits...)
+    n = sum(digits) + Base.length(digits) + 1
+    print("-")
+    i = 1
+    for j in digits
+        print(x[i:i+j-1], "-")
+        i += j
+    end
+    println()
+end
+
+ieee_digits(::Type{T}) where {T<:Base.IEEEFloat} = (1, Base.exponent_bits(T), precision(T) - 1)
+
+#- 
+## Bitstring expression of normalized range
+for T in FloatTypes
+    n_min_n = floatmin(T)
+    n_max_n = floatmax(T) 
+    println("The smallest positive normal number of $(T) = ", n_min_n)
+    print_float_format(bitstring(n_min_n), ieee_digits(T)...)
+    println()
+    println("The largest normal number of $(T) = ", n_max_n)
+    print_float_format(bitstring(n_max_n), ieee_digits(T)...)
+    println()
+end
+
+#-
+## Subnormal numbers
+for T in FloatTypes
+    n_min_s = nextfloat(zero(T))
+    n_max_s = prevfloat(floatmin(T))
+    println("The smallest positive subnormal number of $(T) = ", n_min_s)
+    print_float_format(bitstring(n_min_s), ieee_digits(T)...)
+    println()
+
+    println("The largest subnormal number of $(T) = ", n_max_s)
+    print_float_format(bitstring(n_max_s), ieee_digits(T)...)
+    println()
+end
+
+#-
+## NaN, -Inf, Inf
+for T in FloatTypes
+    nan = T(NaN)
+    ninf = T(-Inf)
+    inf = T(Inf)
+    println("NaN of $(T):")
+    print_float_format(bitstring(nan), ieee_digits(T)...)
+    println()
+
+    println("-Inf of $(T):")
+    print_float_format(bitstring(ninf), ieee_digits(T)...)
+    println()
+
+    println("Inf of $(T):")
+    print_float_format(bitstring(inf), ieee_digits(T)...)
+    println()
 end
 
 # ## 1.6. Examples of Floating Point Computations
