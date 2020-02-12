@@ -67,12 +67,7 @@ end
 # **Def**. $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
 
 for T in FloatTypes
-    println("$(T) ", nextfloat(zero(T)), ", ", prevfloat(floatmin(T)))
-end
-
-#- 
-for T in FloatTypes 
-    println(bitstring(floatmin(nextfloat(zero(T)))), ",", bitstring(prevfloat(floatmin(T))))
+    println("$(T) N_min^s = ", nextfloat(zero(T)), ", N_max^s", prevfloat(floatmin(T)))
 end
 
 # ## 1.3. Rounding
