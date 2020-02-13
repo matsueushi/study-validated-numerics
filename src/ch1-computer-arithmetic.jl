@@ -67,7 +67,7 @@ end
 # **Def**. $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
 
 for T in FloatTypes
-    println("$(T) N_min^s = ", nextfloat(zero(T)), ", N_max^s", prevfloat(floatmin(T)))
+    println("$(T) N_min^s = ", nextfloat(zero(T)), ", N_max^s = ", prevfloat(floatmin(T)))
 end
 
 # ## 1.3. Rounding
@@ -103,12 +103,19 @@ end
 # \text{sign} (x) \max \{ y \in \mathbb{F}^* \mid y \le |x| \} =
 # \text{sign} (x) \triangledown (|x|)$.
 
+# ### 1.3.4 Rounding Errors
+
+#-
+using Printf
+
+for T in FloatTypes
+    @printf("1/10, %s, Round down = %0.17f, Round up = %0.17f\n", T, T(1/10, RoundDown), T(1/10, RoundUp))
+end
+
 # ## 1.4. Floating Point Arithmetic
 
 #- 
 ## tenary shift map
-using Printf
-
 tenary_shift(x) = mod(3x, 1)
 
 let x = 0.1 
@@ -128,7 +135,12 @@ end
 
 #-
 for T in FloatTypes
-    println("$(T), exponent width in bits = ", Base.exponent_bits(T), ", precision = ", precision(T)) 
+    ## The followings are defined on >= 1.4
+    @eval exponent_bias(::Type{$T}) = $(Int(Base.exponent_one(T) >> Base.significand_bits(T)))
+    @eval exponent_max(::Type{$T}) = $(Int(Base.exponent_mask(T) >> Base.significand_bits(T)) - exponent_bias(T))
+
+    println("$(T), exponent width in bits = ", Base.exponent_bits(T), ", precision = ", precision(T), 
+            ", exponent bias = ", exponent_bias(T), ", maximal exponent = ", exponent_max(T)) 
 end
 
 #-
@@ -201,3 +213,19 @@ for T in FloatTypes
     println("rump(x, y) = ", rump(T(x), T(y)))
 end
 
+#-
+using Plots
+
+xs = range(0.995, 1.005, length = 100)
+
+## Expanded
+p1(t) = t^6 - 6t^5 + 15t^4 - 20t^3 + 15t^2 - 6t + 1
+plot(xs, p1.(xs), ls = :dash, label = "expanded")
+
+## Horner
+p2(t) = (((((t - 6) * t + 15) * t - 20) * t + 15) * t - 6) * t +1
+plot!(xs, p2.(xs), ls = :solid, label = "Horner")
+
+## factored 
+p3(t) = (t - 1)^6
+plot!(xs, p3.(xs), ls = :dashdot, label = "factored")
