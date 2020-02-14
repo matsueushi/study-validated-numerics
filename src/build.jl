@@ -14,6 +14,10 @@ function preprocess(s)
     s = "using Pkg; Pkg.activate(\".\"); Pkg.instantiate()\n#-\n" * s
 end
 
+for f in ["Project.toml", "Manifest.toml"]
+    cp(joinpath(root, f), joinpath(out, f), force = true)
+end
+
 for x in ["ch1-computer-arithmetic.jl"]
     # Literate.markdown(x, "./markdown"; documenter=true)
     Literate.notebook(joinpath(src, x), out; 
