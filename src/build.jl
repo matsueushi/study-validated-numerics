@@ -16,5 +16,6 @@ end
 
 for x in ["ch1-computer-arithmetic.jl"]
     # Literate.markdown(x, "./markdown"; documenter=true)
-    Literate.notebook(joinpath(src, x), out; documenter=true)
+    Literate.notebook(joinpath(src, x), out; 
+                preprocess = preprocess, documenter = true)
 end
