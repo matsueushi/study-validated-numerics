@@ -11,5 +11,8 @@ matrix:
   allow_failures:
     - julia: nightly
 
+before_script:
+    - touch src/study-validated-numerics.jl
+
 notifications:
   email: false
