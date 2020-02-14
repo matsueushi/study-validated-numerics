@@ -49,7 +49,7 @@
 # $\mathbb{F}_{\beta, p}^{\check{e}, \hat{e}} $ : *computer representable floating point numbers*
 #
 
-# **Def**. We say a floating point number $x = (-1)^\sigma (b_0 . b_{-1} b_{-2} \cdots)_\beta \times \beta^e$ is *normalized* if the leading digit $b_0$ if non-zero.
+# **Def**. We say a floating point number $x = (-1)^\sigma (b_0 . b_{-1} b_{-2} \cdots)_\beta \times \beta^e$ is *normalized* if the leading digit $b_0$ is non-zero.
 
 # Let's show the *largest positive normal number* $N_{max}^n$ and 
 # the *smallest positive normal number* $N_{min}^n$.
@@ -109,7 +109,7 @@ end
 using Printf
 
 for T in FloatTypes
-    @printf("1/10, %s, Round down = %0.17f, Round up = %0.17f\n", T, T(1/10, RoundDown), T(1/10, RoundUp))
+    @printf("1//10, %s, Round down = %0.17f, Round up = %0.17f\n", T, T(1//10, RoundDown), T(1//10, RoundUp))
 end
 
 # ## 1.4. Floating Point Arithmetic
@@ -128,34 +128,42 @@ end
 #- 
 ## Machine epsilon
 for T in FloatTypes
-    println("Machine epsilon of $(T) is ", eps(T)) 
+    println("Machine epsilon of $(T) = ", eps(T)) 
+end
+
+## Machine epsilon
+for T in FloatTypes
+    println("Machine eta of $(T) = ", eps(zero(T))) 
 end
 
 # ## 1.5. The IEEE standard
 
 #-
+using Base: exponent_bits, exponent_mask, exponent_one, significand_bits
 for T in FloatTypes
     ## The followings are defined on >= 1.4
-    @eval exponent_bias(::Type{$T}) = $(Int(Base.exponent_one(T) >> Base.significand_bits(T)))
-    @eval exponent_max(::Type{$T}) = $(Int(Base.exponent_mask(T) >> Base.significand_bits(T)) - exponent_bias(T))
+    @eval exponent_bias(::Type{$T}) = $(Int(exponent_one(T) >> significand_bits(T)))
+    @eval exponent_max(::Type{$T}) = $(Int(exponent_mask(T) >> significand_bits(T)) - exponent_bias(T))
 
-    println("$(T), exponent width in bits = ", Base.exponent_bits(T), ", precision = ", precision(T), 
+    println("$(T), exponent width in bits = ", exponent_bits(T), ", precision = ", precision(T), 
             ", exponent bias = ", exponent_bias(T), ", maximal exponent = ", exponent_max(T)) 
 end
 
 #-
-function print_float_format(x, digits...)
+ieee_digits(::Type{T}) where {T<:Base.IEEEFloat} = (1, Base.exponent_bits(T), precision(T) - 1)
+
+function print_float_format(x::T) where {T<:Base.IEEEFloat} 
+    bit_x = bitstring(x)
+    digits = ieee_digits(T)
     n = sum(digits) + Base.length(digits) + 1
     print("-")
     i = 1
     for j in digits
-        print(x[i:i+j-1], "-")
+        print(bit_x[i:i+j-1], "-")
         i += j
     end
     println()
 end
-
-ieee_digits(::Type{T}) where {T<:Base.IEEEFloat} = (1, Base.exponent_bits(T), precision(T) - 1)
 
 #- 
 ## Bitstring expression of normalized range
@@ -163,10 +171,10 @@ for T in FloatTypes
     n_min_n = floatmin(T)
     n_max_n = floatmax(T) 
     println("The smallest positive normal number of $(T) = ", n_min_n)
-    print_float_format(bitstring(n_min_n), ieee_digits(T)...)
+    print_float_format(n_min_n)
     println()
     println("The largest normal number of $(T) = ", n_max_n)
-    print_float_format(bitstring(n_max_n), ieee_digits(T)...)
+    print_float_format(n_max_n)
     println()
 end
 
@@ -176,30 +184,29 @@ for T in FloatTypes
     n_min_s = nextfloat(zero(T))
     n_max_s = prevfloat(floatmin(T))
     println("The smallest positive subnormal number of $(T) = ", n_min_s)
-    print_float_format(bitstring(n_min_s), ieee_digits(T)...)
+    print_float_format(n_min_s)
     println()
 
     println("The largest subnormal number of $(T) = ", n_max_s)
-    print_float_format(bitstring(n_max_s), ieee_digits(T)...)
+    print_float_format(n_max_s)
     println()
 end
 
 #-
 ## NaN, -Inf, Inf
 for T in FloatTypes
-    nan = T(NaN)
     ninf = T(-Inf)
     inf = T(Inf)
     println("NaN of $(T):")
-    print_float_format(bitstring(nan), ieee_digits(T)...)
+    print_float_format(T(NaN))
     println()
 
     println("-Inf of $(T):")
-    print_float_format(bitstring(ninf), ieee_digits(T)...)
+    print_float_format(T(-Inf))
     println()
 
     println("Inf of $(T):")
-    print_float_format(bitstring(inf), ieee_digits(T)...)
+    print_float_format(T(Inf))
     println()
 end
 
@@ -229,3 +236,27 @@ plot!(xs, p2.(xs), ls = :solid, label = "Horner")
 ## factored 
 p3(t) = (t - 1)^6
 plot!(xs, p3.(xs), ls = :dashdot, label = "factored")
+
+# ## 1.7 Computer Lab 1
+
+#-
+for i in 1:1000000000
+    x = nextfloat(1.0, i)
+    y = 1/x
+    if x * y != 1.0
+        @printf("x = %0.17f\n", x)
+        print_float_format(x)
+        break
+    end
+end
+
+#-
+prob4(x, y) = 9x^4 - y^4 + 2y^2
+
+x, y = 40545, 70226
+
+for T in FloatTypes
+    println("f(x, y) = ", prob4(T(x), T(y)))
+end
+
+# Correct answer is (3x^2 - x^2)(3x^y + x^2) + 2y^2 = -1 * 9863382151 + 9863382152 = 1

@@ -1,7 +1,7 @@
 # study-validated-numerics
 [Chapter1](https://nbviewer.jupyter.org/github/matsueushi/study-validated-numerics/blob/master/notebook/ch1-computer-arithmetic.ipynb)
 
-# Environment
+## Environment
 Julia 1.3.0
 
 ## Reference
