@@ -10,6 +10,10 @@ using Literate
 src = joinpath(root, "src")
 out = joinpath(root, "notebook")
 
+function preprocess(s)
+    s = "using Pkg; Pkg.activate(\".\"); Pkg.instantiate()\n#-\n" * s
+end
+
 for x in ["ch1-computer-arithmetic.jl"]
     # Literate.markdown(x, "./markdown"; documenter=true)
     Literate.notebook(joinpath(src, x), out; documenter=true)
