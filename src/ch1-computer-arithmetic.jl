@@ -98,6 +98,31 @@ end
 # $\triangledown$ and $\triangle$ give the lower bound and upper bound of roundings: if $\bigcirc$ is a rounding,
 # $\triangledown (x) \le \bigcirc (x) \le \triangle (x)$ for all $x$.
 
+# **In Julia**. Julia can create a float from a given `x` with a explicit rounding mode.
+# See [`Core.Float32`](https://docs.julialang.org/en/v1/base/numbers/#Core.Float32-Tuple{Any}), 
+# [`Core.Float64`](https://docs.julialang.org/en/v1/base/numbers/#Core.Float64-Tuple{Any}).
+# However, `0.1` is a floating-point literal and already converted into `Float64`,
+# the expression `Float64(0.1, RoundDown)` is not equal to $\triangledown (0.1)$.
+
+#-
+using Printf
+
+println(typeof(0.1))
+@printf("%0.17f\n", Float64(0.1, RoundDown))
+
+# Similarly, `1/10` is a floating-point literal.
+
+#-
+println(typeof(1/10))
+@printf("%0.17f\n", Float64(1/10, RoundDown))
+
+# Using a [rational number type](https://docs.julialang.org/en/v1/manual/complex-and-rational-numbers/#Rational-Numbers-1),
+# we can calculate $\triangledown (0.1)$. 
+
+#-
+println(typeof(1//10))
+@printf("%0.17f\n", Float64(1//10, RoundDown))
+
 # ### 1.3.1 Round to Zero
 # **Def**. $\square_z : \mathbb{R}^* \rightarrow \mathbb{F}^*, \square_z (x) = 
 # \text{sign} (x) \max \{ y \in \mathbb{F}^* \mid y \le |x| \} =
@@ -106,13 +131,13 @@ end
 # ### 1.3.4 Rounding Errors
 
 #-
-using Printf
-
 for T in FloatTypes
     @printf("1//10, %s, Round down = %0.17f, Round up = %0.17f\n", T, T(1//10, RoundDown), T(1//10, RoundUp))
 end
 
 # ## 1.4. Floating Point Arithmetic
+# Julia has a method [`Base.Rounding.setrounding`](https://docs.julialang.org/en/v1/base/numbers/#Base.Rounding.setrounding-Tuple{Type,Any}) but it only supports `BigFloat`. 
+# See [Deprecate setrounding #27166](https://github.com/JuliaLang/julia/pull/27166)
 
 #- 
 ## tenary shift map
@@ -123,6 +148,27 @@ let x = 0.1
         @printf("x(%d) = %0.17f\n", i, x)
         x = tenary_shift(x)
     end
+end
+
+#-
+x = 0.0031834
+
+r1(x) = 1 - 1 / sqrt(1 + x)
+r2(x) = (sqrt(1 + x) - 1) / sqrt(1 + x)
+r3(x) = x / (1 + x + sqrt(1 + x))
+
+for T in FloatTypes
+    @printf("%s, r1(x) = %0.17f, r2(x) = %0.17f, r3(x) = %0.17f\n", T, r1(T(x)), r2(T(x)), r3(T(x))) 
+end
+
+#-
+θ = 1.23456
+
+s1(x) = sind(x / 2)^2
+s2(x) = (1 - cosd(x)) / 2
+
+for T in FloatTypes
+    @printf("%s, s1(x) = %0.17f, s2(x) = %0.17f\n", T, s1(T(θ)), s2(T(θ))) 
 end
 
 #- 
@@ -213,7 +259,7 @@ end
 # ## 1.6. Examples of Floating Point Computations
 
 #-
-rump(x::Real, y::Real) = 333.75y^6 + x^2 * (11x^2 * y^2 - y^6 - 121y^4 -2) + 5.5y^8 + x/(2y)
+rump(x::Real, y::Real) = oftype(x, 333.75) * y^6 + x^2 * (11x^2 * y^2 - y^6 - 121y^4 -2) + oftype(x, 5.5) * y^8 + x/(2y)
 
 x, y = 77617, 33096
 for T in FloatTypes

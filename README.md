@@ -5,4 +5,6 @@
 Julia 1.3.0
 
 ## Reference
-Tucker, Warwick. (2011). Validated numerics. A short introduction to rigorous computations. 
+Tucker, Warwick. (2011). Validated numerics. A short introduction to rigorous computation.  
+[JuliaIntervals/IntervalArithmetic.jl](https://github.com/JuliaIntervals/IntervalArithmetic.jl)  
+[JuliaMath/AccurateArithmetic.jl](https://github.com/JuliaMath/AccurateArithmetic.jl)
