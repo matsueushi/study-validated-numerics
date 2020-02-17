@@ -157,8 +157,19 @@ for T in FloatTypes
 end
 
 # ## 1.4. Floating Point Arithmetic
+# For any one of the arithmetic operations $\star \in \{ +, -, \times, \div \}$, 
+# let $⍟ \in \{ \oplus, \ominus, \otimes, ⨸ \}$ denote the corresponding operator in $\mathbb{F}$.
+#
+# **Def**. The floating point arithmetis is said to have **maximum quality** if
+# (R5) $x, y \in \mathbb{F}$ and $\star \in \{ +, -, \times, \div \} \Rightarrow x ⍟ y = \bigcirc (x \star y)$.
+
+# ### Julia Base
 # Julia has a method [`Base.Rounding.setrounding`](https://docs.julialang.org/en/v1/base/numbers/#Base.Rounding.setrounding-Tuple{Type,Any}) but it only supports `BigFloat`. 
 # See [Deprecate setrounding #27166](https://github.com/JuliaLang/julia/pull/27166)
+
+# ### FastRounding.jl
+# [FastRounding.jl](https://github.com/JeffreySarnoff/FastRounding.jl) provides arithmetic operations
+# with directed rounding modes.
 
 #- 
 ## tenary shift map
@@ -181,6 +192,9 @@ r3(x) = x / (1 + x + sqrt(1 + x))
 for T in FloatTypes
     @printf("%s, r1(x) = %0.17f, r2(x) = %0.17f, r3(x) = %0.17f\n", T, r1(T(x)), r2(T(x)), r3(T(x))) 
 end
+
+# **Def**. The machine epsilon $\eps_M$ is the smallest positive floating point number $x$ satisfying
+# $1 < \triangledown (1 + x)$. i.e. $\min \{ x \in \mathbb{F} \mid \triangledown (1 + x)\}$
 
 #-
 θ = 1.23456
