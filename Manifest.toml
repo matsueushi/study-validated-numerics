@@ -51,9 +51,9 @@ deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[ErrorfreeArithmetic]]
-git-tree-sha1 = "cf883b07b5cf0783de9af6a0a3bc60cdce372c49"
+git-tree-sha1 = "a5198ab6c8a724dd3965b31ddd11ccde65300f5b"
 uuid = "90fa49ef-747e-5e6f-a989-263ba693cf1a"
-version = "0.4.1"
+version = "0.5.0"
 
 [[FFMPEG]]
 deps = ["BinaryProvider", "Libdl"]
@@ -62,10 +62,10 @@ uuid = "c87230d0-a227-11e9-1b43-d7ebe4e7570a"
 version = "0.2.4"
 
 [[FastRounding]]
-deps = ["ErrorfreeArithmetic", "Test"]
-git-tree-sha1 = "224175e213fd4fe112db3eea05d66b308dc2bf6b"
+deps = ["ErrorfreeArithmetic", "LinearAlgebra"]
+git-tree-sha1 = "6344aa18f654196be82e62816935225b3b9abe44"
 uuid = "fa42c844-2597-5d31-933b-ebd51ab2693f"
-version = "0.2.0"
+version = "0.3.1"
 
 [[FixedPointNumbers]]
 git-tree-sha1 = "4aaea64dd0c30ad79037084f8ca2b94348e65eaa"
