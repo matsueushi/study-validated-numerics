@@ -51,8 +51,8 @@
 
 # **Def**. We say a floating point number $x = (-1)^\sigma (b_0 . b_{-1} b_{-2} \cdots)_\beta \times \beta^e$ is *normalized* if the leading digit $b_0$ is non-zero.
 
-# Let's show the *largest positive normal number* $N_{max}^n$ and 
-# the *smallest positive normal number* $N_{min}^n$.
+# Let's show the *largest positive normal number* $N_{\max}^n$ and 
+# the *smallest positive normal number* $N_{\min}^n$.
 # The (union of) range $\{ x \in \mathbb{R} \mid N_{min}^n \le |x| \le N_{max}^n \}$ is said to be the *normalized range*.
 
 #-
@@ -65,6 +65,9 @@ end
 
 # ### 1.2.1 Subnormal numbers
 # **Def**. $x \in \mathbb{F}_{\beta, p}^{\check{e}, \hat{e}}$ is said to be *subnormal* if $b_0 = 0$ and $e = \check{e}$.
+
+# Let's find the *largest positive subnormal number* $N_{\max}^s$ and
+# the *smallest positive subnormal nubmer* $N_{\min}^s$.
 
 for T in FloatTypes
     println("$(T) N_min^s = ", nextfloat(zero(T)), ", N_max^s = ", prevfloat(floatmin(T)))
@@ -98,7 +101,7 @@ end
 # $\triangledown$ and $\triangle$ give the lower bound and upper bound of roundings: if $\bigcirc$ is a rounding,
 # $\triangledown (x) \le \bigcirc (x) \le \triangle (x)$ for all $x$.
 
-# **In Julia**. Julia can create a float from a given `x` with a explicit rounding mode.
+# Julia can create a float from a given `x` with a explicit rounding mode.
 # See [`Core.Float32`](https://docs.julialang.org/en/v1/base/numbers/#Core.Float32-Tuple{Any}), 
 # [`Core.Float64`](https://docs.julialang.org/en/v1/base/numbers/#Core.Float64-Tuple{Any}).
 # However, `0.1` is a floating-point literal and already converted into `Float64`,
@@ -117,11 +120,29 @@ println(typeof(1/10))
 @printf("%0.17f\n", Float64(1/10, RoundDown))
 
 # Using a [rational number type](https://docs.julialang.org/en/v1/manual/complex-and-rational-numbers/#Rational-Numbers-1),
-# we can calculate $\triangledown (0.1)$. 
+# we can calculate $\triangledown (0.1)$ properly. 
 
 #-
 println(typeof(1//10))
 @printf("%0.17f\n", Float64(1//10, RoundDown))
+
+#-
+## Rounding methods (in Float64)
+rounding_modes = [RoundNearest, 
+## RoundNearestTiesAway, 
+## RoundNearestTiesUp,
+                  RoundToZero, 
+                  RoundUp, 
+                  RoundDown]
+
+for mode in rounding_modes
+    print("$(mode)")
+    for x in [1//10, -1//10, π]
+        print(", ∘($(x)) = ")
+        @printf("%0.17f", Float64(x, mode))
+    end
+    println()
+end
 
 # ### 1.3.1 Round to Zero
 # **Def**. $\square_z : \mathbb{R}^* \rightarrow \mathbb{F}^*, \square_z (x) = 
