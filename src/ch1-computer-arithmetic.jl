@@ -157,19 +157,35 @@ for T in FloatTypes
 end
 
 # ## 1.4. Floating Point Arithmetic
-# For any one of the arithmetic operations $\star \in \{ +, -, \times, \div \}$, 
-# let $⍟ \in \{ \oplus, \ominus, \otimes, ⨸ \}$ denote the corresponding operator in $\mathbb{F}$.
+# For any one of the arithmetic operations $\star \in \{ +, -, \times, / \}$, 
+# let $⍟ \in \{ \oplus, \ominus, \otimes, \oslash \}$ denote the corresponding operator in $\mathbb{F}$.
 #
-# **Def**. The floating point arithmetis is said to have **maximum quality** if
-# (R5) $x, y \in \mathbb{F}$ and $\star \in \{ +, -, \times, \div \} \Rightarrow x ⍟ y = \bigcirc (x \star y)$.
+# **Def**. The floating point arithmetis is said to have *maximum quality* if  
+# (R5) $x, y \in \mathbb{F}$ and $\star \in \{ +, -, \times, / \} \Rightarrow x ⍟ y = \bigcirc (x \star y)$.
 
 # ### Julia Base
 # Julia has a method [`Base.Rounding.setrounding`](https://docs.julialang.org/en/v1/base/numbers/#Base.Rounding.setrounding-Tuple{Type,Any}) but it only supports `BigFloat`. 
-# See [Deprecate setrounding #27166](https://github.com/JuliaLang/julia/pull/27166)
+# See [Deprecate setrounding #27166](https://github.com/JuliaLang/julia/pull/27166).
 
 # ### FastRounding.jl
 # [FastRounding.jl](https://github.com/JeffreySarnoff/FastRounding.jl) provides arithmetic operations
 # with directed rounding modes.
+
+#-
+using FastRounding
+
+a = 1/3
+b = 3.0
+
+println("a * b, rounded down = ", mul_round(a, b, RoundDown))
+
+println("a * b, rounded down = ", ⊗₋(a, b)) # Equivalent exports
+
+println("√2, rounded up = ", sqrt_round(2.0, RoundUp))
+
+# **Example**. Define the tenary shift map 
+# $f : [0, 1] \rightarrow [0,1]$ by $f(x) = 3x \mod 1$.
+# It has a cycle $\frac{1}{10} \rightarrow \frac{3}{10} \rightarrow \frac{9}{10} \rightarrow \frac{7}{10} \rightarrow \frac{1}{10}$ of four.
 
 #- 
 ## tenary shift map
@@ -182,6 +198,11 @@ let x = 0.1
     end
 end
 
+# **Example**. Calculate the values of the following three symbolically equivalent expressions at $x = 0.0031834$:  
+# 1. $r_1(x) = 1 - \frac{1}{\sqrt{1 + x}}$,  
+# 2. $r_2(x) = \frac{\sqrt{1 + x} - 1}{\sqrt{1 + x}}$,  
+# 3. $r_3(x) = \frac{x}{1 + x + \sqrt{1 + x}}$
+
 #-
 x = 0.0031834
 
@@ -193,9 +214,9 @@ for T in FloatTypes
     @printf("%s, r1(x) = %0.17f, r2(x) = %0.17f, r3(x) = %0.17f\n", T, r1(T(x)), r2(T(x)), r3(T(x))) 
 end
 
-# **Def**. The machine epsilon $\eps_M$ is the smallest positive floating point number $x$ satisfying
-# $1 < \triangledown (1 + x)$. i.e. $\min \{ x \in \mathbb{F} \mid \triangledown (1 + x)\}$
-
+# **Example**.  $\theta = 1.23456^\circ$
+# 1. $s_1(\theta) = \sin \left( \frac{\theta}{2} \right)^2$,  
+# 2. $s_2(\theta) = \frac{1 - \cos(\theta)}{2}$
 #-
 θ = 1.23456
 
@@ -205,6 +226,12 @@ s2(x) = (1 - cosd(x)) / 2
 for T in FloatTypes
     @printf("%s, s1(x) = %0.17f, s2(x) = %0.17f\n", T, s1(T(θ)), s2(T(θ))) 
 end
+
+# **Def**. The machine epsilon $\epsilon_M$ is the smallest positive floating point number $x$ satisfying
+# $\triangledown (1 + x) > 1$. i.e. $\min \{ x \in \mathbb{F} \mid \triangledown (1 + x) > 1 \}$.
+#
+# **Def**. The machine eta $\eta_M$ is the smallest positive floating point number $x$ satisfying
+# $\triangledown (x) > 0$. It is equal to the smallest positive subnormal number $N_{\min}^s$.
 
 #- 
 ## Machine epsilon
@@ -292,6 +319,7 @@ for T in FloatTypes
 end
 
 # ## 1.6. Examples of Floating Point Computations
+# **Example**. $f(x, y) = 333.75y^6 + x^2(11x^2y^2 - y^6 - 121y^4 - 2) + 5.5y^8 + x/(2y), (x, y) = (77617, 33096)$
 
 #-
 rump(x::Real, y::Real) = oftype(x, 333.75) * y^6 + x^2 * (11x^2 * y^2 - y^6 - 121y^4 -2) + oftype(x, 5.5) * y^8 + x/(2y)
@@ -300,6 +328,13 @@ x, y = 77617, 33096
 for T in FloatTypes
     println("rump(x, y) = ", rump(T(x), T(y)))
 end
+
+# **Example**. Plot 
+# \begin{align*}
+# p(x) &= t^6 - 6t^5 + 15t^4 - 20t^3 + 15t^2 - 6t + 1 \ (\text{expanded}) \\ 
+# &= (((((t - 6)t + 15)t - 20)t + 15)t - 6) + 1 \ (\text{Horner}) \\ 
+# &= (t - 1)^6 \ (\text{factored})
+# \end{align*}
 
 #-
 using Plots
@@ -319,7 +354,7 @@ p3(t) = (t - 1)^6
 plot!(xs, p3.(xs), ls = :dashdot, label = "factored")
 
 # ## 1.7 Computer Lab 1
-
+# Find the smallest $x \in (1, 2)$ such that $x \otimes \frac{1}{x} \neq 1$.
 #-
 for i in 1:1000000000
     x = nextfloat(1.0, i)
@@ -336,7 +371,7 @@ prob4(x, y) = 9x^4 - y^4 + 2y^2
 
 x, y = 40545, 70226
 
-for T in FloatTypes
+for T in [Int64, Float16, Float32]
     println("f(x, y) = ", prob4(T(x), T(y)))
 end
 
