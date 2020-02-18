@@ -70,7 +70,7 @@ end
 # the *smallest positive subnormal nubmer* $N_{\min}^s$.
 
 for T in FloatTypes
-    println("$(T) N_min^s = ", nextfloat(zero(T)), ", N_max^s = ", prevfloat(floatmin(T)))
+    println("$(T), N_min^s = ", nextfloat(zero(T)), ", N_max^s = ", prevfloat(floatmin(T)))
 end
 
 # ## 1.3. Rounding
@@ -214,7 +214,7 @@ for T in FloatTypes
     @printf("%s, r1(x) = %0.17f, r2(x) = %0.17f, r3(x) = %0.17f\n", T, r1(T(x)), r2(T(x)), r3(T(x))) 
 end
 
-# **Example**.  $\theta = 1.23456^\circ$
+# **Example**.  $\theta = 1.23456^\circ$,
 # 1. $s_1(\theta) = \sin \left( \frac{\theta}{2} \right)^2$,  
 # 2. $s_2(\theta) = \frac{1 - \cos(\theta)}{2}$
 #-
@@ -319,7 +319,16 @@ for T in FloatTypes
 end
 
 # ## 1.6. Examples of Floating Point Computations
-# **Example**. $f(x, y) = 333.75y^6 + x^2(11x^2y^2 - y^6 - 121y^4 - 2) + 5.5y^8 + x/(2y), (x, y) = (77617, 33096)$
+# **Example**. Print the first 40 factorials $n! = 1 \cdot 2 \cdots n$.
+
+#-
+factorial(n) = n == 0 ? 1 : n * factorial(n - 1)
+
+for n in 0:40
+    println(n, "! = ", factorial(n))
+end
+
+# **Example**. Evaluate $f(x, y) = 333.75y^6 + x^2(11x^2y^2 - y^6 - 121y^4 - 2) + 5.5y^8 + x/(2y)$ for $(x, y) = (77617, 33096)$
 
 #-
 rump(x::Real, y::Real) = oftype(x, 333.75) * y^6 + x^2 * (11x^2 * y^2 - y^6 - 121y^4 -2) + oftype(x, 5.5) * y^8 + x/(2y)
@@ -335,6 +344,8 @@ end
 # &= (((((t - 6)t + 15)t - 20)t + 15)t - 6) + 1 \ (\text{Horner}) \\ 
 # &= (t - 1)^6 \ (\text{factored})
 # \end{align*}
+#
+# around $x = 1.0$.
 
 #-
 using Plots
@@ -346,7 +357,7 @@ p1(t) = t^6 - 6t^5 + 15t^4 - 20t^3 + 15t^2 - 6t + 1
 plot(xs, p1.(xs), ls = :dash, label = "expanded")
 
 ## Horner
-p2(t) = (((((t - 6) * t + 15) * t - 20) * t + 15) * t - 6) * t +1
+p2(t) = (((((t - 6) * t + 15) * t - 20) * t + 15) * t - 6) * t + 1
 plot!(xs, p2.(xs), ls = :solid, label = "Horner")
 
 ## factored 
@@ -354,7 +365,7 @@ p3(t) = (t - 1)^6
 plot!(xs, p3.(xs), ls = :dashdot, label = "factored")
 
 # ## 1.7 Computer Lab 1
-# Find the smallest $x \in (1, 2)$ such that $x \otimes \frac{1}{x} \neq 1$.
+# **Example**. Find the smallest $x \in (1, 2)$ such that $x \otimes \frac{1}{x} \neq 1$.
 #-
 for i in 1:1000000000
     x = nextfloat(1.0, i)
@@ -365,6 +376,8 @@ for i in 1:1000000000
         break
     end
 end
+
+# **Example**. Evaluate $f(x, y) = 9x^4 - y^4 +2y^2$ for $(x, y) = (40545, 70226)$.
 
 #-
 prob4(x, y) = 9x^4 - y^4 + 2y^2

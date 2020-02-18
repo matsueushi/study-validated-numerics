@@ -18,7 +18,10 @@ for f in ["Project.toml", "Manifest.toml"]
     cp(joinpath(root, f), joinpath(out, f), force = true)
 end
 
-for x in ["ch1-computer-arithmetic.jl"]
+for x in [
+    "ch1-computer-arithmetic.jl",
+    "ch2-interval-arithmetic.jl"
+    ]
     # Literate.markdown(x, "./markdown"; documenter=true)
     Literate.notebook(joinpath(src, x), out; 
                 preprocess = preprocess, documenter = true)
