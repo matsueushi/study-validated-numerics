@@ -19,8 +19,8 @@ for f in ["Project.toml", "Manifest.toml"]
 end
 
 for x in [
-    "ch1-computer-arithmetic.jl",
-    "ch2-interval-arithmetic.jl"
+    "ch2-interval-arithmetic.jl",
+    "ch1-computer-arithmetic.jl"
     ]
     # Literate.markdown(x, "./markdown"; documenter=true)
     Literate.notebook(joinpath(src, x), out; 
