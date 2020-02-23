@@ -1,6 +1,6 @@
 # study-validated-numerics
 [Chapter 1. Computer Arithmetic](https://nbviewer.jupyter.org/github/matsueushi/study-validated-numerics/blob/master/notebook/ch1-computer-arithmetic.ipynb)  
-[Chapter 2. Interval Arithmetic](https://nbviewer.jupyter.org/github/matsueushi/study-validated-numerics/blob/master/notebook/ch2-computer-arithmetic.ipynb)
+[Chapter 2. Interval Arithmetic](https://nbviewer.jupyter.org/github/matsueushi/study-validated-numerics/blob/master/notebook/ch2-interval-arithmetic.ipynb)
 
 ## Environment
 Julia 1.3.0
