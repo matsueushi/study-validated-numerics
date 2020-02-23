@@ -17,11 +17,11 @@ struct Interval{T<:SysFloat}
     end
 end
 
-Interval(a::Real, b::Real) = Interval(Float64(a, RoundDown), Float64(b, RoundUp))
+Interval(lo::Real, hi::Real) = Interval(Float64(lo, RoundDown), Float64(hi, RoundUp))
 Interval(x::Real) = Interval(x, x)
 
 function Base.show(io::IO, a::Interval{T}) where T<:SysFloat
-    print(io, "Interval{$(T)}(", @sprintf("%17.17f", a.lo), ", ", @sprintf("%17.17f", a.hi), ")") # TODO
+    print(io, "Interval{$(T)}(", @sprintf("%17.17f", a.lo), ", ", @sprintf("%17.17f", a.hi), ")")
 end
 
 #-
@@ -52,11 +52,13 @@ Interval(π)
 function Base.:+(a::Interval, b::Interval)
     lo = add_round(a.lo, b.lo, RoundDown)
     hi = add_round(a.hi, b.hi, RoundUp)
-    return Interval(lo, hi)
+    Interval(lo, hi)
 end
 
 Base.:+(a::Real, b::Interval) = Interval(a) + b
 Base.:+(a::Interval, b::Real) = a + Interval(b)
+
+Base.:+(a::Interval) = a
 
 #-
 Interval(1, 2) + Interval(3, 4)
@@ -70,17 +72,19 @@ Interval(1, 2) + 3
 #-
 3 + Interval(1, 2)
 
-# -, *, /
+# Define other unary and binary functions
 
 #-
 function Base.:-(a::Interval, b::Interval)
     lo = sub_round(a.lo, b.hi, RoundDown)
     hi = sub_round(a.hi, b.lo, RoundUp)
-    return Interval(lo, hi)
+    Interval(lo, hi)
 end
 
 Base.:-(a::Real, b::Interval) = Interval(a) - b
 Base.:-(a::Interval, b::Real) = a - Interval(b)
+
+Base.:-(a::Interval) = 0 - a
 
 
 function Base.:*(a::Interval, b::Interval)
@@ -92,7 +96,7 @@ function Base.:*(a::Interval, b::Interval)
              mul_round(a.lo, b.hi, RoundUp),
              mul_round(a.hi, b.lo, RoundUp),
              mul_round(a.hi, b.hi, RoundUp))
-    return Interval(lo, hi)
+    Interval(lo, hi)
 end
 
 Base.:*(a::Real, b::Interval) = Interval(a) * b
@@ -112,11 +116,21 @@ function Base.:/(a::Interval, b::Interval)
              div_round(a.lo, b.hi, RoundUp),
              div_round(a.hi, b.lo, RoundUp),
              div_round(a.hi, b.hi, RoundUp))
-    return Interval(lo, hi)
+    Interval(lo, hi)
 end
 
 Base.:/(a::Real, b::Interval) = Interval(a) / b
 Base.:/(a::Interval, b::Real) = a / Interval(b)
+
+# Unary
+
+#-
++a
+
+#-
+-a
+
+# Binary
 
 #-
 a + b
@@ -136,14 +150,83 @@ Interval(1/10)
 #-
 Interval(1)/10
 
+# Sub-distributivity
+
 #-
 Interval(1//10)
 
 #-
-c = Interval(0.25, 0.50)
+a = Interval(-1, 1)
+b = Interval(-1, 0)
+c = Interval(3, 4)
 
 #-
 a * (b + c)
 
 #-
 a * b + a * c
+
+# Defial equal
+
+#-
+import Base.==
+
+==(a::Interval, b::Interval) = a.lo == b.lo && a.hi == b.hi
+
+#-
+a = Interval(1, 10)
+b = Interval(-2, 3)
+c = Interval(3, 5)
+
+a == a
+
+#-
+a == b
+
+#-
+a == c
+
+#-
+a != a
+
+#-
+a != b
+
+#-
+a != c
+
+# Inclusion
+
+#-
+Base.issubset(a::Interval, b::Interval) = b.lo <= a.lo && a.hi <= b.hi
+Base.:⊊(a::Interval, b::Interval) = a ⊆ b && a != b
+
+#-
+a ⊆ a
+
+#-
+a ⊆ b
+
+#-
+b ⊆ a
+
+#-
+a ⊊ c
+
+#-
+c ⊊ a
+
+#-
+a ⊊ a
+
+#-
+a ⊇ a
+
+#-
+a ⊇ c 
+
+#-
+a ⊋ a
+
+#-
+a ⊋ c
