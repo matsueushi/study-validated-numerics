@@ -230,3 +230,38 @@ a ⊋ a
 
 #-
 a ⊋ c
+
+# Intersection
+
+#-
+function Base.:∩(a::Interval, b::Interval) 
+    if a.hi < b.lo || b.hi < a.lo
+        nothing
+    else
+        Interval(max(a.lo, b.lo), min(a.hi, b.hi))
+    end
+end
+
+#-
+a = Interval(1, 3)
+b = Interval(4, 5)
+c = Interval(2, 5)
+
+a ∩ b
+
+#-
+isnothing(a ∩ c)
+
+#-
+isnothing(a ∩ b)
+
+# Union
+
+#-
+Base.:∪(a::Interval, b::Interval) = Interval(min(a.lo, b.lo), max(a.hi, b.hi))
+
+#-
+a ∪ c
+
+#-
+a ∪ b
